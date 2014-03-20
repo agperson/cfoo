@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'yaml'
+
+s = JSON.load(File.new(ARGV.first))
+
+def convert(obj)
+  if obj.is_a?(Hash)
+    obj.each do |k, v|
+      if k == "Ref"
+        return "$(#{v})"
+      elsif k == "Fn::Base64"
+        return { "!Base64" => convert(v) }
+      elsif k == "Fn::Join"
+        sep = v.shift
+        return v.map { |i| convert(i) }.join(sep)
+      elsif k == "Fn::GetAtt"
+        return "$(#{v[0]}[#{convert(v[1])}])"
+      elsif k == "Fn::FindInMap"
+        return "$(#{v[0]}[#{convert(v[1])}][#{convert(v[2])}])"
+      elsif v.is_a?(Enumerable)
+        obj[k] = convert(v)
+      else
+        v
+      end
+    end
+  elsif obj.is_a?(Array)
+    obj.each_index do |i|
+      if obj[i].is_a?(Enumerable)
+        obj[i] = convert(obj[i])
+      else
+        obj[i]
+      end
+    end
+  else
+    return obj
+  end
+end
+
+puts convert(s).to_yaml
