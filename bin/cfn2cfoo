@@ -1,9 +1,37 @@
 #!/usr/bin/env ruby
+# This script provides a reasonable if simplistic conversion of standard
+# CloudFormation JSON templates into cfoo YAML grammar.
 
 require 'json'
 require 'yaml'
+require 'stringio'
 
-s = JSON.load(File.new(ARGV.first))
+if ARGV.include? "--help" or ARGV.first.nil?
+    STDERR.puts "Usage: #{File.basename $0} [filename]"
+    STDERR.puts "Convert a CloudFormation JSON template to cfoo YAML grammar."
+    exit 1
+else
+  filename = ARGV.first
+end
+
+begin
+  s = JSON.load(File.new(filename))
+rescue
+  STDERR.puts "Error: Unable to load and parse input file: #{filename}"
+  exit 1
+end
+
+class Base64Type < String
+  def to_yaml_type
+    "!Base64"
+  end
+
+  def encode_with coder
+    coder.scalar(to_yaml_type, self)
+  end
+end
+
+YAML::add_domain_type("", "Base64Type")
 
 def convert(obj)
   if obj.is_a?(Hash)
@@ -11,10 +39,9 @@ def convert(obj)
       if k == "Ref"
         return "$(#{v})"
       elsif k == "Fn::Base64"
-        return { "!Base64" => convert(v) }
+        return Base64Type.new(convert(v))
       elsif k == "Fn::Join"
-        sep = v.shift
-        return v.map { |i| convert(i) }.join(sep)
+        return v[1].map { |i| convert(i) }.join(v[0])
       elsif k == "Fn::GetAtt"
         return "$(#{v[0]}[#{convert(v[1])}])"
       elsif k == "Fn::FindInMap"
@@ -34,7 +61,8 @@ def convert(obj)
       end
     end
   else
-    return obj
+    # Escape any unescaped pass-through variables (i.e. in UserData scripts)
+    return obj.gsub(/\$/, '\$')
   end
 end
 
