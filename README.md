@@ -1,11 +1,11 @@
 # Cfoo
 
-[![Build Status](https://travis-ci.org/drrb/cfoo.png?branch=master)](https://travis-ci.org/drrb/cfoo)
-[![Coverage Status](https://coveralls.io/repos/drrb/cfoo/badge.png?branch=master)](https://coveralls.io/r/drrb/cfoo)
-[![Code Climate](https://codeclimate.com/github/drrb/cfoo.png)](https://codeclimate.com/github/drrb/cfoo)
+[![Build Status](https://travis-ci.org/drrb/cfoo.svg)](https://travis-ci.org/drrb/cfoo)
+[![Coverage Status](https://img.shields.io/coveralls/drrb/cfoo.svg)](https://coveralls.io/r/drrb/cfoo)
+[![Code Climate](https://img.shields.io/codeclimate/github/drrb/cfoo.svg)](https://codeclimate.com/github/drrb/cfoo)
 
-[![Gem Version](https://badge.fury.io/rb/cfoo.png)](https://badge.fury.io/rb/cfoo)
-[![Dependency Status](https://gemnasium.com/drrb/cfoo.png)](https://gemnasium.com/drrb/cfoo)
+[![Gem Version](https://badge.fury.io/rb/cfoo.svg)](https://badge.fury.io/rb/cfoo)
+[![Dependency Status](https://gemnasium.com/drrb/cfoo.svg)](https://gemnasium.com/drrb/cfoo)
 
 Cfoo (pronounced "sifu") lets you write your [CloudFormation](https://aws.amazon.com/cloudformation)
 templates [in YAML](#templates), and makes it easier with some [helpers](#shortcuts).
@@ -139,9 +139,7 @@ Cfoo Shortcut: `$(SubnetConfig[VPC][CIDR])`
 
 CloudFormation: `{ "Fn::GetAtt" : [ "Ec2Instance", "PublicIp" ] }`
 
-Cfoo Shortcut: `$(Ec2Instance.PublicIp)`
-
-Other Shortcut: `$(Ec2Instance[PublicIp])`
+Cfoo Shortcut: `$(Ec2Instance[PublicIp])`
 
 ##### Embedded Reference
 
